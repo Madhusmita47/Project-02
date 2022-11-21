@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/Divya-jeet/Project2/issues"
   },
-  "homepage": "https://github.com/Divya-jeet/Project2#readme"
+  "homepage": "https://github.com/Divya-jeet/Project2#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.7.2"
+  }
 }
