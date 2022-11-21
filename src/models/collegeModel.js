@@ -22,7 +22,8 @@ const collegeSchema=new mongoose.Schema(
     isDeleted:{
         type:Boolean,
         default:false
-    }
+    },
+    interns:{type:String, ref:}
  }, {timestamps:true}
 );
 module.exports=model.Schema("College",collegeSchema)
