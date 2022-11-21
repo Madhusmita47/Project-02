@@ -1,7 +1,8 @@
 const internModel = require('../models/internModel')
 const collegeModel = require('../models/collegeModel')
 const internModel=("../models/internModel.js")
-const { value,regForName,regForFullName,regForLInk,regForEmail,regForMobileNo}=require("../validation/validation.js")
+
+const { value,regForName,regForFullName,regForLInk,regForEmail,regForMobileNo,valid}=require("../validation/validation.js")
 
 const createCollege=async function(req,res){
     try{
@@ -40,6 +41,31 @@ const createCollege=async function(req,res){
 
 
 
+///2
+const createIntern= async function(req,res){
+
+    const userInput=req.body
+    const{name,mobile,email,collegeName}=userInput
+
+   if(!name){res.status(400).send({status:false,message:"Name Is required"})}
+   if(!mobile){res.status(400).send({status:false,message:"mobile Is required"})}
+   if(!email){res.status(400).send({status:false,message:"email Is required"})}
+   if(!collegeName){res.status(400).send({status:false,message:"collegeName Is Required"})}
+  
+   if(!valid(name)){res.status(400).send({status:false,message:"enter valid name"})}
+   if(!valid(collegeName)){res.status(400).send({status:false,message:"enter valid collegeName"})}
+
+   const id= await collegeModel.find(collegeName)
+   id._id=collegeId
+
+   userInput.collegeId=collegeId
+
+    const internCreated =await internModel.create(userInput)
+    return res.status(201).send({status:true,message:"intern created succesfully",data:internCreated})
+}
+
+
+
 
 
 
@@ -74,3 +100,4 @@ const Handler3 = async function (req, res) {
 
 
 module.exports=createCollege
+module.exports=createIntern
