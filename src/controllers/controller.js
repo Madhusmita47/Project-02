@@ -9,19 +9,25 @@ const createCollege = async function (req, res) {
     try {
         let data = req.body
         let { name, fullName, logoLink } = data
+        
+        if (!name) { return res.status(400).send({ status: false, message: "name field is mandatory" }) }
+        if (!fullname) { return res.status(400).send({ status: false, message: "fullname field is mandatory" }) }
+        if (!logoLink) { return res.status(400).send({ status: false, message: "logoLink field is mandatory" }) }
+
         //---------checking the mandatory fields------------------
-        if (!(name && fullName)) { return res.status(400).send({ status: false, message: "all fields are mandatory" }) }
+        // if (!(name && fullName)) { return res.status(400).send({ status: false, message: "all fields are mandatory" }) }
         //-----------convert everything into lowerCase------------
         name = name.trim().toLowerCase()
         fullName = fullName.trim()
-        //----checkduplicatevalueo------
+
+        //-------------------checkduplicatevalue---------------------//
         let checkDuplicateName = await collegeModel.findOne({ name: name })
         if (checkDuplicateName) { return res.status(400).send({ status: false, message: "the name is exist please provide another college name" }) }
+
         let checkDuplicatefullName = await collegeModel.findOne({ fullName: fullName })
         if (checkDuplicatefullName) { return res.status(400).send({ status: false, message: "the fullName is already exists provide another collegeName" }) }
-        //  let checkDuplicateLogoLink=await collegeModel.findOne({name:name})
-        // if(checkDuplicateName)
-        //  {return res.status(400).send({status:false,message:"the name is exist please provide another college name"})}
+
+        // let checkDuplicate = await collegeModel.findOne( {$or: [{ name: name} ,{fullName:fullName}] })
 
         //-------validation of name------------
         if (!(valid(name))) { return res.status(400).send({ status: false, message: "provide a valid name" }) }
