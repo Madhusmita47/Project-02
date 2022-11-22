@@ -36,4 +36,4 @@ const internSchema = new mongoose.Schema({
 },{timestamp:true}
  
 );
-module.exports=mongoose.module("Intern",internSchema);
+module.exports=mongoose.model("Intern",internSchema);

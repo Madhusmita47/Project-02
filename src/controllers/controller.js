@@ -1,7 +1,7 @@
 
 const { default: mongoose } = require('mongoose')
 const collegeModel = require('../models/collegeModel')
-const internModel = ("../models/internModel.js")
+const internModel = require("../models/internModel.js")
 
 const { value, regForName, regForFullName, regForLink, regForEmail, regForMobileNo, valid } = require("../validation/validation.js")
 
@@ -54,81 +54,88 @@ const createCollege = async function (req, res) {
 
 ///2-----------------------createIntern-----------------------
 const createIntern = async function (req, res) {
-    try {
+    try{
         const userInput = req.body
         const { name, mobile, email, collegeName } = userInput
 
         if (!name) { res.status(400).send({ status: false, message: "Name Is required" }) }
         if (!mobile) { res.status(400).send({ status: false, message: "mobile Is required" }) }
         if (!email) { res.status(400).send({ status: false, message: "email Is required" }) }
-        name = name.trim().toLowerCase()
+        //name = name.trim().toLowerCase()
         //---------------------validation of name-----------------------------
         // if (!(valid(name))) { return res.status(400).send({ status: false, message: "provide a valid name" }) }
-        if ((regForName(name)==false)) { return res.status(400).send({ status: false, message: "invalid name" }) }
+        if ((regForName(name) == false)) { return res.status(400).send({ status: false, message: "invalid name" }) }
         //-----------------------validation of email---------------------------------------
         if (regForEmail(email) == false) { return res.status(400).semd({ status: false, mrssage: "provide a valid email" }) }
         //-----------------validation of mobile number--------------------------
         if ((regForMobileNo(mobile) == false)) { return res.status(400).send({ status: false, message: "provide a valid mobile number" }) }
         //-----------------validation of college name---------
+        console.log(regForMobileNo(mobile))
         if (req.body.collegeName) {
 
-            collegeName = req.body.collegeName
-            collegeName = collegeName.trim().toLowerCase()
+           
+            let collegeNamef= collegeName.trim().toLowerCase()
+            console.log(collegeName)
             if (!valid(req.body.collegeName)) { res.status(400).send({ status: false, message: "enter valid collegeName" }) }
-            let present = await collegeModel.findOne({ name: req.body.collegeName })
+            let present = await collegeModel.findOne({ name: collegeNamef })
             if (!present) return res.status(404).send({ status: false, message: "college name not present" })
             let id = present._id.toString()
             req.body.collegeId = id
-            req.body.name=name
-
+            req.body.name = name
+            console.log(present)
             const internCreated = await internModel.create(req.body)
             return res.status(201).send({ status: true, message: "intern created succesfully", data: internCreated })
 
 
-        }else if(req.body.collegeId){
-                 let valid=mongoose.Types.ObjectId.isValid(req.body.collegeId)
-                 if(!valid) {return res.statud(400).send({status:false,message:"objectId is invalid"})}
-            
-                    const present = await collegeModel.findOne({_id:req.body.collegeId})
-                    if(!present) return res.status(404).send({status:false,message:"collegeId is not present"})
-                    
+        } else if (req.body.collegeId) {
+            let valid = mongoose.Types.ObjectId.isValid(req.body.collegeId)
+            if (!valid) { return res.statud(400).send({ status: false, message: "objectId is invalid" }) }
 
-            
-                   
-            
-                    const internCreated = await internModel.create(req.body)
-                    return res.status(201).send({ status: true, message: "intern created succesfully", data: internCreated })
-                    
-        }else{
-            return res.status(400).send({status:false,message:"collegeId or collegeName must be present"}) 
+            const present = await collegeModel.findOne({ _id: req.body.collegeId })
+
+            if (!present) return res.status(404).send({ status: false, message: "collegeId is not present" })
+            console.log(present)
+
+
+            const internCreated = await internModel.create(req.body)
+            return res.status(201).send({ status: true, message: "intern created succesfully", data: internCreated })
+
+        } else {
+            return res.status(400).send({ status: false, message: "collegeId or collegeName must be present" })
         }
+    }catch(error) {
+        return res.status(500).send({status:false,message:error.message})
     }
-    catch (error) {
-        return res.status(500).send({ status: false, message: error})
     }
-}
+  
+    
 
 //------------------getcollegeDetails----------------------------
 const getcollegeData = async function (req, res) {
     try {
         const input1 = req.query.collegeName  //iith
 
-        if (!input1) { res.status(200).send({ status: false, message: "Please enter collegeName in queryParam" }) }
+        if (!input1) { res.status(400).send({ status: false, message: "Please enter collegeName in queryParam" }) }
 
         //Dbcall for getting the CollegeId from Name
-        const collegeDetail = await collegeModel.find(input1)
+        let collegeDetail = await collegeModel.findOne({name:input1})
+        if(!collegeDetail) return res.status(400).send({status:false,msg:"college not found"})
+        let id=collegeDetail._id.toString()
 
-        //Dbcall for grtting internlist from collegeId
-        const internList = await internModel.findById({ collegeId: collegeDetail._id })
-
-        collegeDetail.interns = internList
-
-        res.status(200).send({ status: true, data: collegeDetail })
+        //-------------Dbcall for grtting internlist from collegeId--------------
+        const internList = await internModel.find({collegeId:id})
+        console.log(internList)
+        let obj={}
+        obj.interns=internList
+        // collegeDetail.interns = internList
+        obj.name=collegeDetail.fullName
+        obj.id=collegeDetail._id
+        res.status(200).send({ status: true, data: obj })
 
         // if(!result){res.status(404).send({status:false , message:"Details not found."})}
 
     } catch (error) {
-        return res.status(500).send({ status: false, message: error.messege })
+        return res.status(500).send({ status: false, message: error.message })
     }
 }
 
