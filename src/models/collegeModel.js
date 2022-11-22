@@ -17,16 +17,16 @@ const collegeSchema=new mongoose.Schema(
     logoLink:{
         type:String,
         required:true,
-        unique:true
+      
         },
     isDeleted:{
         type:Boolean,
         default:false
     },
-    interns:{type:String, ref:}
+
  }, {timestamps:true}
 );
-module.exports=model.Schema("College",collegeSchema)
+module.exports=mongoose.model("College",collegeSchema)
 
 
 
