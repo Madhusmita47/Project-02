@@ -11,7 +11,7 @@ const createCollege = async function (req, res) {
         let { name, fullName, logoLink } = data
         
         if (!name) { return res.status(400).send({ status: false, message: "name field is mandatory" }) }
-        if (!fullname) { return res.status(400).send({ status: false, message: "fullname field is mandatory" }) }
+        if (!fullName) { return res.status(400).send({ status: false, message: "fullname field is mandatory" }) }
         if (!logoLink) { return res.status(400).send({ status: false, message: "logoLink field is mandatory" }) }
 
         //---------checking the mandatory fields------------------
@@ -127,10 +127,12 @@ const getcollegeData = async function (req, res) {
         let collegeDetail = await collegeModel.findOne({name:input1})
         if(!collegeDetail) return res.status(400).send({status:false,msg:"college not found"})
         let id=collegeDetail._id.toString()
+        console.log(collegeDetail)
+        // collegeDetail.__doc
 
         //-------------Dbcall for grtting internlist from collegeId--------------
         const internList = await internModel.find({collegeId:id})
-        console.log(internList)
+        // console.log(internList)
         let obj={}
         obj.interns=internList
         // collegeDetail.interns = internList
